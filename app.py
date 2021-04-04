@@ -27,8 +27,8 @@ app = Flask(__name__)
 # Check https://keras.io/applications/
 # or https://www.tensorflow.org/api_docs/python/tf/keras/applications
 
-from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
-model = MobileNetV2(weights='imagenet')
+# from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
+# model = MobileNetV2(weights='imagenet')
 
 print('Model loaded. Check http://127.0.0.1:5000/')
 
@@ -37,9 +37,9 @@ print('Model loaded. Check http://127.0.0.1:5000/')
 MODEL_PATH = 'models/feiyang.pth'
 
 # Load your own trained model
-# model = load_model(MODEL_PATH)
-# model._make_predict_function()          # Necessary
-# print('Model loaded. Start serving...')
+model = load_model(MODEL_PATH)
+model._make_predict_function()          # Necessary
+print('Model loaded. Start serving...')
 
 
 def model_predict(img, model):
