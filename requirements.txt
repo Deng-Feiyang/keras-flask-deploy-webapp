@@ -1,5 +1,5 @@
 albumentations==0.5.2
-cv2==4.5.1
+opencv-python
 Flask==1.1.1
 gevent==1.4.0
 h5py==2.10.0
