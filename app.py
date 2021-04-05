@@ -1,4 +1,3 @@
-import albumentations
 import cv2
 import os
 import sys
@@ -63,6 +62,23 @@ def image_loader(transformer, file_path):
         
     return torch.tensor(img).unsqueeze(0).float() # Insert a "batch" dimension
 
+def model_predict(img, model):
+    pil_img = img.resize((224, 224))
+
+    # Preprocessing the image
+    x = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
+    x = cv2.cvtColor(x, cv2.COLOR_BGR2RGB)
+    # x = np.true_divide(x, 255)
+    # x = np.expand_dims(x, axis=0)
+    x = x.astype(np.float32)
+    x = x.transpose(2, 0, 1)
+    x = torch.tensor(x).unsqueeze(0).float()
+
+    model.eval()
+    logits = model(x)
+    print('Generating outputs...')
+    return logits
+
 @app.route('/', methods=['GET'])
 def index():
     # Main page
@@ -75,16 +91,13 @@ def predict():
         # Get the image from post request
         img = base64_to_pil(request.json)
 
-        file_path = "./uploads/image.jpg"
-        # Save the image to ./uploads
-        img.save(file_path)
+        # file_path = 'image.jpg'
+        # Save the image
+        # img.save(file_path)
         
-        # Data transformation
-        data_transforms = albumentations.Compose([albumentations.Resize(224, 224),])
-
         # Make prediction
-        model.eval()
-        logits = model(image_loader(data_transforms, file_path))
+        logits = model_predict(img, model)
+
         # preds = model_predict(file_path, model)
 
         # Process your result for human
@@ -95,14 +108,20 @@ def predict():
         preds_ett = torch.zeros(logits[:,:4].shape).scatter(1,maxid.unsqueeze(1).cpu(),1.0)
         preds[:,:4] = preds_ett
         outputs = preds.detach().numpy().astype(np.int)
-        
+        result = ''
+        if outputs[0, 0] == 1: result += 'ETT - Abnormal' + '\n'
+        if outputs[0, 1] == 1: result += ' ETT - Borderline' + '\n'
+        if outputs[0, 4] == 1: result += ' NGT - Abnormal' + '\n'
+        if outputs[0, 5] == 1: result += ' NGT - Borderline' + '\n'
+        if outputs[0, 6] == 1: result += ' NGT - Incompletely Imaged' + '\n'
+        if outputs[0, 8] == 1: result += ' CVC - Abnormal' + '\n'
+        if outputs[0, 9] == 1: result += ' CVC - Borderline' + '\n'
+        if outputs[0, 11] == 1: result += ' Swan Ganz Catheter Present' + '\n'
+        else: result = 'Normal Placement'
         # Serialize the result, you can add additional fields
-        return jsonify(ETT_Abnormal=outputs[0,0], ETT_Borderline=outputs[0,1],
-                      ETT_Normal=outputs[0,2], NGT_Abnormal=outputs[0,4],
-                      NGT_Borderline=outputs[0,5], NGT_IncompletelyImaged=outputs[0,6],
-                      NGT_Normal=outputs[0,7], CVC_Abnormal=outputs[0,8],
-                      CVC_Borderline=outputs[0,9], CVC_Normal=outputs[0,10],
-                      Swan_Ganz_Catheter_Present=outputs[0,11])
+        print(outputs)
+        print(result)
+        return jsonify(result=result)
 
     return None
 
