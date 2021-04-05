@@ -42,7 +42,7 @@ print('Model loaded. Check http://127.0.0.1:5000/')
 
 
 # Trained model saved with model.save()
-MODEL_PATH = 'models/feiyang.pth'
+MODEL_PATH = 'feiyang.pth'
 
 model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device('cpu')))
 
