@@ -4,20 +4,20 @@ import sys
 
 # Flask
 from flask import Flask, redirect, url_for, request, render_template, Response, jsonify, redirect
-from werkzeug.utils import secure_filename
+# from werkzeug.utils import secure_filename
 from gevent.pywsgi import WSGIServer
 
 # TensorFlow and tf.keras
-import tensorflow as tf
-from tensorflow import keras
+# import tensorflow as tf
+# from tensorflow import keras
 
-from tensorflow.keras.applications.imagenet_utils import preprocess_input, decode_predictions
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing import image
+# from tensorflow.keras.applications.imagenet_utils import preprocess_input, decode_predictions
+# from tensorflow.keras.models import load_model
+# from tensorflow.keras.preprocessing import image
 
 # Torch
 import torch
-import torch.nn as nn
+# import torch.nn as nn
 
 # Some utilites
 import numpy as np
@@ -42,7 +42,7 @@ print('Model loaded. Check http://127.0.0.1:5000/')
 
 
 # Trained model saved with model.save()
-MODEL_PATH = 'feiyang.pth'
+MODEL_PATH = 'models/feiyang.pth'
 
 model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device('cpu')))
 
